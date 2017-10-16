@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Mess Bill Data</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css"></style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.print.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('#messdata').DataTable({
+      scrollY:        '500vh',
+      dom: 'Bfrtip',
+      scrollCollapse: true,
+      paging:         true,
+      buttons: ['print'],
+      order: [[1,"asc"]]
+    });
+    //  $('#tokendata').DataTable({
+    //   scrollY:        '500vh',
+    //   dom: 'Bfrtip',
+    //   scrollCollapse: true,
+    //   paging:         false,
+    //   buttons: ['print'],
+    //   order: [[5,"des"]]
+    // });
+} );
+  </script>
+</head>
+<body>
+<div class="container">
+<div class="row">
+<div class="col-sm-6">
+<h2>Cost Reducer</h2>
+<form action="/mess/" method="post">
+{% csrf_token %}
+<input type="text" name="rollnumber" placeholder="Roll Number">
+
+<input type="text" name="cost" placeholder="Cost to be Reduced">
+
+<input type="submit" name="submit">
+</form>
+
+</div>
+<div class="col-sm-6">
+<a href="/token_detail/" target="_blank"><h1>Token Details</h1></a>
+</div>
+</div>
+<h3>Check Below to see if your cost has been reduced or not. Type the roll number in the box to search.</h3>
+</div>
+<br>
+<br>
+<br>
+
+<div class="container">
+  
+  <div class="row">
+    <div class="col-sm-12" style="background-color:lavender;">
+      
+  <h2>Data For this Month</h2>
+  <hr>
+  <table id="messdata" class="display" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Roll Number</th>
+                <th>Hall</th>
+                <th>Total</th>
+                
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+               <th>Name</th>
+                <th>Roll Number</th>
+                <th>Hall</th>
+                <th>Total</th>
+            </tr>
+        </tfoot>
+        <tbody>
+           {% for student in students %}
+            <tr>
+                <td>{{student.name}}</td>
+                <td>{{student.roll}}</td>
+                <td>3</td>
+                <td>{{student.total_cost}}</td>
+                
+            </tr>
+            {% endfor %}
+          </tbody>
+    </table>
+
+
+
+    </div>
+    <!-- <div class="col-sm-8" style="background-color:lavenderblush;">
+      
+  <h2>Tokens Details</h2>
+  <hr>
+  <table id="tokendata" class="display" cellspacing="0">
+        <thead>
+            <tr>
+<th>Token Number</th>
+<th>Roll Number </th>
+<th>Name </th>
+<th>Item Taken</th>
+<th>Total Cost</th>
+<th>Time Taken</th>
+</tr>
+        </thead>
+        
+        <tbody>
+          {% for token in tokens %}
+<tr>
+<td>{{token.ran_id}}</td>
+<td>{{token.roll}}</td>
+<td>{{token.name}}</td>
+<td>{{token.item_taken}}</td>
+<td>{{token.total_cost}}</td>
+<td>{{token.time_taken}}</td>
+</tr>
+{% endfor %}
+          </tbody>
+    </table>
+
+    </div> -->
+   
+  </div>
+</div>
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div class="container" style="background:red">
+	<h1>Start a new Month</h1>
+	<br>
+	<br>
+	<h2>Use this only when you want to start calculating for a new month</h2>
+<a href="/delete/">Flush the Data</a>
+</div>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,161 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+		<title>Hall 3:Mess</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/html5shiv.js"></script><![endif]-->
+		{% load staticfiles %}
+		<script src=" {% static "assets1/js/jquery.min.js" %}"></script>
+		{% load staticfiles %}
+		<link rel="stylesheet" href="{% static "assets/css/main.css" %}" />
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		{% load staticfiles %}
+		<style type="text/css">
+			#element	{ position:fixed; top:2%; right:2%; background: yellow; }
+		</style>
+		<noscript><link rel="stylesheet" href="{% static "assets/css/noscript.css" %}" /></noscript>
+	</head>
+	<body>
+	
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main">
+						<header style="padding-bottom:1px !important">
+							<a href="/student_view/">
+							<span class="avatar">
+								{% load staticfiles %}
+								<img width="200em" height="200em" src="http://oa.cc.iitk.ac.in/Oa/Jsp/Photo/{{rollnumber}}_0.jpg" alt="Your Photo Was Supposed to Be here" /></span>
+							<h2>{{name}}</h2>
+							</a>
+							<!--{{hall}}-->
+						</header>
+						<hr style="margin-top: 0;"/>
+						<!--hr  />
+						<h3><a href="/student_view/">Go Directly to Your Dashboard</a></h3>
+						<hr/-->
+
+
+						<form method="post" action="/{{rollnumber}}/item_extra/" id="item_form">
+	{% csrf_token %}
+	<select name="item" form="item_form" id="select_option">
+		<option value="" disabled selected>Choose Extras</option>
+		{% for items in extras %}
+		<option value="{{items.extra_name}}-{{items.extra_cost}}">{{items.extra_name}}    -     Rs. {{items.extra_cost}}</option>
+		{% endfor %}
+	</select>
+	<input type="hidden" name="item_detail" hidden="true" id="item_detail">
+	<input type="hidden" name="item_quantity" hidden="true" id="item_quantity">
+
+	<div class="field">
+		<br>
+		<ul class="actions">
+			<li><input type="text" name="quantity" value="1" id="inc" ></li>
+			<li><input class="button" type="button" onclick="inc_extra()" value="+" ></li>
+			<li><input class="button" type="button" onclick="dec_extra()" value="-" ></li>
+		</ul>
+		<ul class="actions">
+			<li><input class="button" type="button" value="Add" id="add" ></li>
+		</ul>
+	</div>
+	<div id="yourlist" hidden>
+		<hr style="margin: 1em 0;"/>
+		<h3>Selected Items</h3>
+		<p id= "bill_detail"></p>
+		<hr style="margin: 1em 0;"/>
+	</div>
+<ul class="actions">
+	<li><input class="button" type="submit" value="Submit" ></li>
+	
+</ul>
+<ul class="actions">
+	
+	<li><button type="button" onclick="guest_menu()" >Have a Guest?</button></li>
+</ul>
+<script>
+var list = ''; //added by Rohan
+$(document).ready(function(){
+    $("#add").click(function(){
+
+        var item_detail = $('#select_option').find(":selected").val();
+	if(item_detail === '') return;	//added by Rohan
+	var item_detail2 = item_detail.substring(0,item_detail.lastIndexOf('-')); //added by Rohan
+        var item_quantity = $('#inc').val();
+	list += item_detail2 + '&emsp;&emsp;' + item_quantity + '<br>'; //added by Rohan
+	$('#bill_detail').html(list); //added by Rohan
+	$('#yourlist').show(); //added by Rohan
+	$('#inc').val(1);
+	$('#select_option').val('');
+
+        var item_detail_append = $("#item_detail").val();
+        var item_quantity_append = $("#item_quantity").val();
+        $('#item_detail').val(item_detail_append+item_detail+",");
+        $('#item_quantity').val(item_quantity_append+item_quantity+",");
+
+    });
+    
+});
+</script>
+<div class="field" id="guest" style="display: none">
+	{% for items1 in guest %}
+<input type="radio" name="item" value="{{items1.extra_name}}-{{items1.extra_cost}}"> {{items1.extra_name}} - Rs. {{items1.extra_cost}}
+<br>
+{% endfor %}
+</div>
+</form>
+
+
+
+<script type="text/javascript">
+	function guest_menu(){
+		document.getElementById("guest").style.display = "block";
+	}
+	function inc_extra(){
+		var q = parseInt(document.getElementById("inc").value);
+		document.getElementById("inc").value =  (q + 1).toString();
+	}
+	function dec_extra(){
+		var q =	parseInt(document.getElementById("inc").value);
+		if (q>1) document.getElementById("inc").value =  (q - 1).toString();
+	}
+</script>
+
+						
+							
+						
+						<hr />
+						
+						<footer>
+							<ul class="icons">
+								
+								<li><a href="/logout/" class="fa fa-sign-out">Logout</a></li>
+								<li><a href="/student_view/" class="fa fa-home">Mess</a></li>
+							</ul>
+						</footer>
+					</section>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<ul class="copyright">
+							<li>&copy; Hall - 3</li><li>Design: <a href="http://home.iitk.ac.in/~adarshs">Adarsh</a></li>
+						</ul>
+					</footer>
+
+			</div>
+
+		<!-- Scripts -->
+			<!--[if lte IE 8]><script src="assets/js/respond.min.js"></script><![endif]-->
+			<script>
+				if ('addEventListener' in window) {
+					window.addEventListener('load', function() { document.body.className = document.body.className.replace(/\bis-loading\b/, ''); });
+					document.body.className += (navigator.userAgent.match(/(MSIE|rv:11\.0)/) ? ' is-ie' : '');
+				}
+			</script>
+
+	</body>
+</html>
+

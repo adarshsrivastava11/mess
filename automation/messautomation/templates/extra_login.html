@@ -1,0 +1,14 @@
+<html>
+<head>
+<title>Hello</title>
+</head>
+<body>
+
+<form method="post" action="/extra_login/">
+	{% csrf_token %}
+<input type="text" name="roll" />
+<input type="submit" />
+</form>
+<p>{{roll}}</p>
+</body>
+</head>

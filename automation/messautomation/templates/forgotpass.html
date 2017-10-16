@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>Forgot Password </title>
+</head>
+<body onload="myFunction()">
+<h1>Try Remebering your last password, and change your password from the student dashboard. So that you don't forget it again.</h1> 
+<h3>Before requesting, please make sure that your mailbox is not full.</h3>
+<br>
+<form method="post" action = "/forgotpass/">
+	{% csrf_token %}
+<input type="text" placeholder="Roll Number" name="rollnumber">
+
+<input type="submit" value="Request New Password">
+</form>
+<p>Your new password would be sent to your IITK Mail ID.</p>
+<h3 id="error">You haven't signed up yet. Click to <a href="/signup/">sign up</a> first.</h3>
+</body>
+<script>
+function myFunction() {
+    var x = document.getElementById("error");
+    if ("{{error}}" === "not_signed_up") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+</script>
+</html>

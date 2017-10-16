@@ -1,0 +1,60 @@
+<html>
+<head>
+  <title>Token Details</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+   <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css"></style>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.print.min.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('#messdata').DataTable({
+      scrollY:        '500vh',
+      dom: 'Bfrtip',
+      scrollCollapse: true,
+      paging:         true,
+      buttons: ['print'],
+      order: [[5,"des"]]
+    });
+} );
+  </script>
+</head>
+<body>
+
+<div class="container-fluid" style="height:100%; !important">
+  <h2>Data For this Month</h2>
+  <hr>
+  <table id="messdata" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+<th>Token Number</th>
+<th>Roll Number </th>
+<th>Name </th>
+<th>Item Taken</th>
+<th>Total Cost</th>
+<th>Time Taken</th>
+</tr>
+        </thead>
+        
+        <tbody>
+          {% for token in tokens %}
+<tr>
+<td>{{token.ran_id}}</td>
+<td>{{token.roll}}</td>
+<td>{{token.name}}</td>
+<td>{{token.item_taken}}</td>
+<td>{{token.total_cost}}</td>
+<td>{{token.time_taken}}</td>
+</tr>
+{% endfor %}
+          </tbody>
+    </table>
+</div>
+</body>
+</html>

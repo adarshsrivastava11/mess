@@ -1,0 +1,10 @@
+<html>
+<head>
+<title>Hello</title>
+</head>
+<body>
+
+
+<img src="{{img_url}}" >
+</body>
+</head>
