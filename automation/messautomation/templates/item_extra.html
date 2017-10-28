@@ -15,6 +15,14 @@
 		{% load staticfiles %}
 		<style type="text/css">
 			#element	{ position:fixed; top:2%; right:2%; background: yellow; }
+
+			.hide {
+				display: none;
+			}
+
+			.added {
+			    box-shadow: 5px 5px 0px #aaaaaa;
+			}
 		</style>
 		<noscript><link rel="stylesheet" href="{% static "assets/css/noscript.css" %}" /></noscript>
 	</head>
@@ -32,101 +40,122 @@
 								<img width="200em" height="200em" src="http://oa.cc.iitk.ac.in/Oa/Jsp/Photo/{{rollnumber}}_0.jpg" alt="Your Photo Was Supposed to Be here" /></span>
 							<h2>{{name}}</h2>
 							</a>
-							<!--{{hall}}-->
 						</header>
 						<hr style="margin-top: 0;"/>
-						<!--hr  />
-						<h3><a href="/student_view/">Go Directly to Your Dashboard</a></h3>
-						<hr/-->
 
 
 						<form method="post" action="/{{rollnumber}}/item_extra/" id="item_form">
-	{% csrf_token %}
-	<select name="item" form="item_form" id="select_option">
-		<option value="" disabled selected>Choose Extras</option>
-		{% for items in extras %}
-		<option value="{{items.extra_name}}-{{items.extra_cost}}">{{items.extra_name}}    -     Rs. {{items.extra_cost}}</option>
-		{% endfor %}
-	</select>
-	<input type="hidden" name="item_detail" hidden="true" id="item_detail">
-	<input type="hidden" name="item_quantity" hidden="true" id="item_quantity">
+							{% csrf_token %}
+							<!--select name="item" form="item_form" id="select_option"-->
+								<!--option value="" disabled selected>Choose Extras</option-->
+								{% for items in extras %}
+								<!--div style="display: flex;padding: 10px;justify-content: space-between;"-->
+								<div style="padding: 7px;display: flex;justify-content: space-between;">
+									<span id="extra{{ forloop.counter }}" class="button" onclick="add({{ forloop.counter }})" val="{{items.extra_name}}-{{items.extra_cost}}" style="margin-left: 5px;margin-right: 5px;width: 100%;">
+										{{items.extra_name}}&nbsp;&nbsp;&nbsp;&#8377;{{items.extra_cost}}
+									</span>
+									<input id="quantity{{ forloop.counter }}" oninput="qchange({{ forloop.counter }})" min="1" class="button hide" type="number" value="1" style="width: 50px; padding: 5px;">
+								</div>
+								{% endfor %}
+							<!--/select-->
+							<input type="hidden" name="item_detail" hidden="true" id="item_detail">
+							<input type="hidden" name="item_quantity" hidden="true" id="item_quantity">
+							<br>
+							<ul class="actions">
+								<li><input class="button" type="submit" value="Submit" ></li>
+								
+							</ul>
+							<ul class="actions">
+								<li><button type="button" onclick="guest_menu()" >Have a Guest?</button></li>
+							</ul>
+							<script>
+								var extrasarr=[], qarr=[];
+								function add(i) {
+									//$("#quantity"+i).val(parseInt($("#quantity"+i).val())+1);
+									$("#extra"+i).toggleClass("added");
+									$("#quantity"+i).toggleClass("added");
+									$("#quantity"+i).toggleClass("hide");
+									if($("#extra"+i).hasClass("added"))
+									{
+										$("#quantity"+i).val(1);
+										extrasarr.push($("#extra"+i).attr('val'));
+										qarr.push(1);
+									}
+									else
+									{
+										var delindex = extrasarr.indexOf($("#extra"+i).attr('val'));
+										extrasarr.splice(delindex,1);
+										qarr.splice(delindex,1);
+									}
 
-	<div class="field">
-		<br>
-		<ul class="actions">
-			<li><input type="text" name="quantity" value="1" id="inc" ></li>
-			<li><input class="button" type="button" onclick="inc_extra()" value="+" ></li>
-			<li><input class="button" type="button" onclick="dec_extra()" value="-" ></li>
-		</ul>
-		<ul class="actions">
-			<li><input class="button" type="button" value="Add" id="add" ></li>
-		</ul>
-	</div>
-	<div id="yourlist" hidden>
-		<hr style="margin: 1em 0;"/>
-		<h3>Selected Items</h3>
-		<p id= "bill_detail"></p>
-		<hr style="margin: 1em 0;"/>
-	</div>
-<ul class="actions">
-	<li><input class="button" type="submit" value="Submit" ></li>
-	
-</ul>
-<ul class="actions">
-	
-	<li><button type="button" onclick="guest_menu()" >Have a Guest?</button></li>
-</ul>
-<script>
-var list = ''; //added by Rohan
-$(document).ready(function(){
-    $("#add").click(function(){
+									update();
+									 
+								}
 
-        var item_detail = $('#select_option').find(":selected").val();
-	if(item_detail === '') return;	//added by Rohan
-	var item_detail2 = item_detail.substring(0,item_detail.lastIndexOf('-')); //added by Rohan
-        var item_quantity = $('#inc').val();
-	list += item_detail2 + '&emsp;&emsp;' + item_quantity + '<br>'; //added by Rohan
-	$('#bill_detail').html(list); //added by Rohan
-	$('#yourlist').show(); //added by Rohan
-	$('#inc').val(1);
-	$('#select_option').val('');
+								function qchange(i) {
+									var index = extrasarr.indexOf($("#extra"+i).attr('val'));
+									qarr[index] = $("#quantity"+i).val();
 
-        var item_detail_append = $("#item_detail").val();
-        var item_quantity_append = $("#item_quantity").val();
-        $('#item_detail').val(item_detail_append+item_detail+",");
-        $('#item_quantity').val(item_quantity_append+item_quantity+",");
+									update();
+								}
 
-    });
-    
-});
-</script>
-<div class="field" id="guest" style="display: none">
-	{% for items1 in guest %}
-<input type="radio" name="item" value="{{items1.extra_name}}-{{items1.extra_cost}}"> {{items1.extra_name}} - Rs. {{items1.extra_cost}}
-<br>
-{% endfor %}
-</div>
-</form>
+								function update() {
+									$('#item_detail').val(extrasarr.join(","));
+									$('#item_quantity').val(qarr.join(","));
+									//console.log($('#item_detail').val());
+									//console.log($('#item_quantity').val());
+								}
+
+							/*var list = ''; //added by Rohan
+							$(document).ready(function(){
+
+								
+
+							    $("#add").click(function(){
+
+							        var item_detail = $('#select_option').find(":selected").val();
+								if(item_detail === '') return;	//added by Rohan
+								var item_detail2 = item_detail.substring(0,item_detail.lastIndexOf('-')); //added by Rohan
+							        var item_quantity = $('#inc').val();
+								list += item_detail2 + '&emsp;&emsp;' + item_quantity + '<br>'; //added by Rohan
+								$('#bill_detail').html(list); //added by Rohan
+								$('#yourlist').show(); //added by Rohan
+								$('#inc').val(1);
+								$('#select_option').val('');
+
+							        var item_detail_append = $("#item_detail").val();
+							        var item_quantity_append = $("#item_quantity").val();
+							        $('#item_detail').val(item_detail_append+item_detail+",");
+							        $('#item_quantity').val(item_quantity_append+item_quantity+",");
+
+							    });
+							    
+							});*/
+							</script>
+							<div class="field" id="guest" style="display: none">
+								{% for items1 in guest %}
+							<input type="radio" name="item" value="{{items1.extra_name}}-{{items1.extra_cost}}"> {{items1.extra_name}} - Rs. {{items1.extra_cost}}
+							<br>
+							{% endfor %}
+							</div>
+						</form>
 
 
 
-<script type="text/javascript">
-	function guest_menu(){
-		document.getElementById("guest").style.display = "block";
-	}
-	function inc_extra(){
-		var q = parseInt(document.getElementById("inc").value);
-		document.getElementById("inc").value =  (q + 1).toString();
-	}
-	function dec_extra(){
-		var q =	parseInt(document.getElementById("inc").value);
-		if (q>1) document.getElementById("inc").value =  (q - 1).toString();
-	}
-</script>
+						<script type="text/javascript">
+							function guest_menu(){
+								document.getElementById("guest").style.display = "block";
+							}
+							function inc_extra(){
+								var q = parseInt(document.getElementById("inc").value);
+								document.getElementById("inc").value =  (q + 1).toString();
+							}
+							function dec_extra(){
+								var q =	parseInt(document.getElementById("inc").value);
+								if (q>1) document.getElementById("inc").value =  (q - 1).toString();
+							}
+						</script>
 
-						
-							
-						
 						<hr />
 						
 						<footer>
