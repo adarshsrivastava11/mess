@@ -134,7 +134,7 @@ def item_extra(request,rollnumber):
 	now = datetime.now()
 	now = now.strftime("%A")
 
-	username = ""
+	username = rollnumber
 	#info = "http://home.iitk.ac.in/~himnshu/studentsearch/profile.php?username="+b[1]+""
 	#page = urllib2.urlopen(info)
 	#soup = BeautifulSoup(page,"html.parser")
@@ -146,79 +146,63 @@ def item_extra(request,rollnumber):
 
 	item1 = item
 	quantity = request.POST.get('item_quantity',False)
+	if item != False and quantity != False:
+		item = item.split(',')
+
+		quantity = quantity.split(',')
+
+		item_length = len(item)
+		for i in range(0,item_length):
+			all_items = item[i]
+
+			all_items = all_items.split('-')
+			item_name = all_items[0]
+
+			item_cost = int(all_items[1])
+
+			quantity1 = quantity[i]
+			quantity1 = int(quantity1)
+			print quantity1
+
+			if quantity > 0:
+				item_total_cost = item_total_cost+(item_cost*quantity1)
+
+			else:
+				return redirect("/")
+
 	try:
-		student_getname = Student.objects.get(roll=rollnumber)
-		username = student_getname.roll
-		name = name+''
-	except Exception:
-		name = "Please Define Your Name in the DataBase"
-	else:
+      			student = Student.objects.get(roll=rollnumber)
+      			student.total_cost = student.total_cost+item_total_cost
+      			student.recent_item=item1
+
+      			if item1 != False:
+      				student.name = name
 
 
-		#c =  all_p[4].text.split(',')
-		#hall= c[0]
-		# if hall != 'HALL3':
-		# 	return redirect('/')
+      				student.all_items_total_cost = student.all_items_total_cost+str(item_total_cost)+','
+      				now = datetime.now()
+      				now = str(now)
+      				student.all_items_date= student.all_items_date+now+','
+	  			student.save()
+	  			ran_id = str(randint(1,9))+str(randint(10,99))+str(randint(100,999))
 
+	  			token = Token(roll = rollnumber,name=name,time_taken=now,item_taken=" ".join(item1),total_cost=item_total_cost,ran_id=ran_id)
+	  			token.save()
+	  			student.token_ids = student.token_ids+ran_id+','
+	  			student.save()
+	  			# fo = open("tokens/"+ran_id+".txt","w")
+	  			# file_data = "Name - "+name+"<br>Roll Number - "+rollnumber+"<br>Item - "+" ".join(item1)+"</br>Total Cost - "+str(item_total_cost)+"</br>Token Number - <bold> "+ran_id+"</bold>"+"</br> Time Taken - "+now
+	  			# fo.write(file_data)
+	  			# fo.close()
+	  			return redirect('/'+ran_id+'/token/')
 
-
-		if item != False and quantity != False:
-			item = item.split(',')
-
-			quantity = quantity.split(',')
-
-			item_length = len(item)
-			for i in range(0,item_length-1):
-				all_items = item[i]
-
-				all_items = all_items.split('-')
-				item_name = all_items[0]
-
-				item_cost = int(all_items[1])
-
-				quantity1 = quantity[i]
-				quantity1 = int(quantity1)
-				print quantity1
-
-				if quantity > 0:
-					item_total_cost = item_total_cost+(item_cost*quantity1)
-
-				else:
-					return redirect("/")
-
-		try:
-	      			student = Student.objects.get(roll=rollnumber)
-	      			student.total_cost = student.total_cost+item_total_cost
-	      			student.recent_item=item1
-
-	      			if item1 != False:
-	      				student.name = name
-
-
-	      				student.all_items_total_cost = student.all_items_total_cost+str(item_total_cost)+','
-	      				now = datetime.now()
-	      				now = str(now)
-	      				student.all_items_date= student.all_items_date+now+','
-		  			student.save()
-		  			ran_id = str(randint(1,9))+str(randint(10,99))+str(randint(100,999))
-
-		  			token = Token(roll = rollnumber,name=name,time_taken=now,item_taken=" ".join(item1),total_cost=item_total_cost,ran_id=ran_id)
-		  			token.save()
-		  			student.token_ids = student.token_ids+ran_id+','
-		  			student.save()
-		  			fo = open("tokens/"+ran_id+".txt","w")
-		  			file_data = "Name - "+name+"<br>Roll Number - "+rollnumber+"<br>Item - "+" ".join(item1)+"</br>Total Cost - "+str(item_total_cost)+"</br>Token Number - <bold> "+ran_id+"</bold>"+"</br> Time Taken - "+now
-		  			fo.write(file_data)
-		  			fo.close()
-		  			return redirect('/'+ran_id+'/token/')
-
-		except Student.DoesNotExist:
-				user = User.objects.get(username=rollnumber)
-				if user.DoesNotExist != True:
-					student = Student(name=name,roll=rollnumber,total_cost=bdmr+item_cost,hall=hall,username=username,recent_item_cost=item_cost,recent_item_name=item_name)
-		  			student.save()
-		  		else:
-		  			return redirect("/signup/")
+	except Student.DoesNotExist:
+			user = User.objects.get(username=rollnumber)
+			if user.DoesNotExist != True:
+				student = Student(name=name,roll=rollnumber,total_cost=bdmr+item_cost,hall=hall,username=username,recent_item_cost=item_cost,recent_item_name=item_name)
+	  			student.save()
+	  		else:
+	  			return redirect("/signup/")
 
 
 
@@ -335,7 +319,7 @@ def token_view(request):
 def delete_all(request):
 	if request.COOKIES.get('ismess') != 'yes941145287651819870377':
 		return redirect('/student_view/')
-	to = 'surajydv@iitk.ac.in'
+	to = 'hall3@iitk.ac.in'
 	today = datetime.now()
 	month = today.strftime('%B')
 	subject = "Mess Bill for Month - "+month
@@ -404,7 +388,11 @@ def token_generator(request,tokennum):
 	user_current = request.user
 	rollnumber = user_current.username
 	img_url = "https://oa.cc.iitk.ac.in/Oa/Jsp/Photo/"+rollnumber+"_0.jpg"
-	fo = open("tokens/"+tokennum+".txt","r+")
-	data = fo.read()
-	fo.close()
+	# token = Token(roll = rollnumber,name=name,time_taken=now,item_taken=" ".join(item1),total_cost=item_total_cost,ran_id=ran_id)
+
+	token = Token.objects.get(ran_id=tokennum)
+	data = "Name - "+token.name+"<br>Roll Number - "+token.roll+"<br>Item - "+token.item_taken+"</br>Total Cost - "+token.total_cost+"</br>Token Number - <bold> "+token.ran_id+"</bold>"+"</br> Time Taken - "+token.time_taken
+	# fo = open("tokens/"+tokennum+".txt","r+")
+	# data = fo.read()
+	# fo.close()
 	return render(request,'token.html',{'data':data,'image_url':img_url,'token_id':tokennum})
