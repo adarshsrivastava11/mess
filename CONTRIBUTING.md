@@ -1,4 +1,4 @@
-# CONTRIBUTE.md
+# CONTRIBUTING.md
 Follow the following instructions to contribute to our system.
 
 Fork the repo first, then execute the following commands:
